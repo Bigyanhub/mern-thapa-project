@@ -12,6 +12,7 @@ const URI = process.env.MONGODB_URI;
 const connectDb = async() =>{
 try {
     // Try to connect to MongoDB
+    console.log("Connecting to MongoDB with URI:", URI);
     await mongoose.connect(URI);
     console.log("Connected to DB sucessufully");
     
