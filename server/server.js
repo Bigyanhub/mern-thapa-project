@@ -10,7 +10,6 @@ const router = require("./router/auth-router")
 const connectDb = require("./utils/db")
 
 //Middleware that parse JSON from request(incoming to backend)
-// Middleware to parse incoming JSON requests
 app.use(express.json());
 
 /* --------------------------- Sends to the router -------------------------- */

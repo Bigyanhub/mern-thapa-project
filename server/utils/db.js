@@ -1,6 +1,7 @@
 // Import mongoose for MongoDB connection
 const mongoose = require("mongoose");
 
+//For local mongoDB connection
 // const URI = "mongodb://127.0.0.1:27017/mern_admin";
 // mongoose.connect(URI);
 
