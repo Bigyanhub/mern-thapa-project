@@ -1,13 +1,9 @@
-// Load environment variables from .env file
-require("dotenv").config();
-// Import express framework
-const express = require("express");
-// Create an express application
-const app = express();
-// Import authentication router
-const router = require("./router/auth-router")
-// Import database connection function
-const connectDb = require("./utils/db")
+require("dotenv").config();                     // Load environment variables from .env file
+
+const express = require("express");             // Import express framework
+const app = express();                          // Create an express application
+const router = require("./router/auth-router")  // Import authentication router
+const connectDb = require("./utils/db")         // Import database connection function
 
 //Middleware that parse JSON from request(incoming to backend)
 app.use(express.json());

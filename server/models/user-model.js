@@ -1,3 +1,6 @@
+// Import mongoose for MongoDB schema and model
+const mongoose = require("mongoose");
+
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
@@ -27,6 +30,6 @@ const userSchema = new mongoose.Schema({
 })
 
 //define the model or the collection name
-const User = new mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema);
 
 module.exports = User
