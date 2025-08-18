@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
+    unique: true,
   },
 
   email: {
@@ -36,7 +37,7 @@ userSchema.pre("save", async function (next) {
   const user = this;
 
   if (!user.isModified("password")) {
-    next();
+    return next();
   }
 
   try {

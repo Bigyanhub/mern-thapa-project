@@ -22,16 +22,19 @@ const home = (req, res) => {
 // Controller for register route
 const register = async (req, res) => {
   try {
-    // const data = req.body;
-    console.log(req.body);
     // Destructure user data from request body
     const { username, email, phone, password } = req.body;
 
+    //check if email is valid format
+    if (!email.includes("@")) {
+      return res.status(400).json({ msg: "Invalid email format" });
+    }
     // Check if user already exists
     const userExist = await User.findOne({ email: email });
     if (userExist) {
       return res.status(400).json({ msg: "email already exists" });
     }
+    
 
     //check if username already exist
     // const usernameExist = await User.findOne({ username: username });
@@ -56,16 +59,18 @@ const register = async (req, res) => {
     });
 
     // res.status(201).json({ message: "User registered successfully" });
-    res
-      .status(201)
-      .json({
-        msg: "registration sucessfull",
-        token: await userCreated.generateToken(),
-        userId: userCreated._id.toString(),
-      });
-  } catch (error) {
+    res.status(201).json({
+      msg: "registration sucessfull",
+      token: await userCreated.generateToken(),
+      userId: userCreated._id.toString(),
+    });
+   } catch (error) {
+    // Handle duplicate key error (race condition)
+    if (error.code === 11000 && error.keyPattern && error.keyPattern.email) {
+  return res.status(400).json({ msg: "Email already exists" });
+}
     console.log(error);
-    res.status(500).json({ message: "Internal server error " + error });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 // Export controller functions
