@@ -7,49 +7,34 @@ const bcrypt = require("bcrypt");
 // Controller for home route
 const home = (req, res) => {
   try {
-    // Send a welcome message as response
     res.status(200).json({ msg: "Welcome to our home page" });
   } catch (error) {
-    // Log any errors
     console.log(error);
   }
 };
-
 /* -------------------------------------------------------------------------- */
 /*                               Register Logic                               */
 /* -------------------------------------------------------------------------- */
 
-// Controller for register route
 const register = async (req, res) => {
   try {
-    // Destructure user data from request body
+    // 1a. Extract registration data from request body
     const { username, email, phone, password } = req.body;
 
-    //check if email is valid format
+    // 1b. Basic email check (weak – should be replaced with regex or validator.js)
     if (!email.includes("@")) {
       return res.status(400).json({ msg: "Invalid email format" });
     }
-    // Check if user already exists
+
+    // 1c. Look up existing user to enforce unique email
     const userExist = await User.findOne({ email: email });
+
+    // 1d. If user already exists, block duplicate registration
     if (userExist) {
-      return res.status(400).json({ msg: "email already exists" });
+      return res.status(400).json({ msg: "Email already exists" });
     }
 
-    //check if username already exist
-    // const usernameExist = await User.findOne({ username: username });
-    // if (usernameExist) {
-    //   return res.status(400).json({ msg: "Username already taken" });
-    // }
-
-    //Check how many account have the same phonenumber
-    // const phoneCount = await User.countDocuments({ phone: phone });
-    // if (phoneCount >= 2) {
-    //   return res
-    //     .status(400)
-    //     .json({ msg: "Too many accounts registered with this phone number" });
-    // }
-
-    // Create a new user
+    // 1e. Create new user → triggers pre-save middleware to hash password
     const userCreated = await User.create({
       username,
       email,
@@ -57,17 +42,19 @@ const register = async (req, res) => {
       password,
     });
 
-    // res.status(201).json({ message: "User registered successfully" });
+    // 1f. Return success with freshly signed JWT (via user model method)
     res.status(201).json({
-      msg: "registration sucessfull",
+      msg: "Registration successful",
       token: await userCreated.generateToken(),
       userId: userCreated._id.toString(),
     });
   } catch (error) {
-    // Handle duplicate key error (race condition)
-    if (error.code === 11000 && error.keyPattern && error.keyPattern.email) {
+    // 1g. Handle MongoDB duplicate key error (safety net if unique check fails)
+    if (error.code === 11000 && error.keyPattern?.email) {
       return res.status(400).json({ msg: "Email already exists" });
     }
+
+    // 1h. Unexpected errors → log & return generic server error
     console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
@@ -79,22 +66,21 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    // 1. Get email and password from request body
+    // 2a. Extract login credentials from request body
     const { email, password } = req.body;
 
-    // 2. Find user by email in the database
+    // 2b. Attempt to find user by email
     const userExist = await User.findOne({ email });
 
-    // 3. If user not found, send error response
+    // 2c. If no account found → block login
     if (!userExist) {
-      return res.status(400).json({ msg: "Invalid Credentials" });
+      return res.status(400).json({ msg: "Invalid credentials" });
     }
 
-    // 4. Compare provided password with hashed password in database
-    // (Note: This should use the model's comparePassword method, not bcrypt directly)
+    // 2d. Compare supplied password with stored hash (bcrypt.compare)
     const isMatch = await userExist.comparePassword(password);
 
-    // 5. If password matches, send success response with JWT token
+    // 2e. If match → issue JWT via model method
     if (isMatch) {
       res.status(200).json({
         msg: "Login successful",
@@ -102,14 +88,14 @@ const login = async (req, res) => {
         userId: userExist._id.toString(),
       });
     } else {
-      // 6. If password does not match, send error response
-      return res.status(401).json({ msg: "Invalid Credentials" });
+      // 2f. Password mismatch → reject login
+      return res.status(401).json({ msg: "Invalid credentials" });
     }
   } catch (error) {
-    // 7. Handle any server errors
+    // 2g. Fallback for unexpected errors
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
-// Export controller functions
+
 module.exports = { home, register, login };

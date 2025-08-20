@@ -1,20 +1,19 @@
-// Import mongoose for MongoDB schema and model
-const mongoose = require("mongoose"); // ODM for MongoDB
-const bcrypt = require("bcrypt"); // For password hashing
-const jwt = require("jsonwebtoken"); // For JWT token generation
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
-// Define the user schema: structure of user documents in MongoDB
+// Schema defines how user data is stored in MongoDB
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
-    unique: true, // Ensures usernames are unique
+    unique: true, // prevents duplicate usernames
   },
 
   email: {
     type: String,
     required: true,
-    // unique: true can be added for email uniqueness
+    // better to add unique: true for consistency, but handled in controller too
   },
 
   phone: {
@@ -33,68 +32,71 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-// Pre-save hook: hashes password before saving user to DB
-// This runs automatically when a new user is created or password is changed
+/* -------------------------------------------------------------------------- */
+/*                        Registration Flow (continuation)                    */
+/* -------------------------------------------------------------------------- */
+
+// 1e.i. Triggered when register() calls User.create() in controller
 userSchema.pre("save", async function (next) {
-  // 'this' refers to the user document being saved
   const user = this;
 
-  // Only hash password if it has been modified (or is new)
+  // 1e.ii. Only hash password if it's new/modified (prevents rehashing on updates)
   if (!user.isModified("password")) {
     return next();
   }
 
   try {
-    // Generate salt and hash the password
+    // 1e.iii. Generate salt (cost factor = 10 → controls hashing difficulty)
     const saltRound = await bcrypt.genSalt(10);
+
+    // 1e.iv. Hash the plaintext password before saving
     const hash_password = await bcrypt.hash(user.password, saltRound);
+
+    // 1e.v. Replace plain password with its secure hash
     user.password = hash_password;
-    // After hashing, continue saving
     next();
   } catch (error) {
-    // Pass error to next middleware
+    // 1e.vi. Pass hashing errors back up → caught in controller’s try/catch
     next(error);
   }
 });
 
-// Instance method: compares a plain password with the hashed password
-// Used in auth-controller during login to verify credentials
+/* -------------------------------------------------------------------------- */
+/*                          Login Flow (continuation)                         */
+/* -------------------------------------------------------------------------- */
+
+// 2d.i. Triggered when login() calls userExist.comparePassword(password)
 userSchema.methods.comparePassword = async function (password) {
+  // 2d.ii. bcrypt.compare → checks plain password against hashed DB password
   return bcrypt.compare(password, this.password);
 };
 
-// Instance method: generates a JWT token for the user
-// Used in auth-controller to send token after registration/login
+/* -------------------------------------------------------------------------- */
+/*                Shared between Registration (1f) and Login (2e)             */
+/* -------------------------------------------------------------------------- */
+
+// Called from register() [1f] and login() [2e] after user is validated
 userSchema.methods.generateToken = async function () {
   try {
+    // 1f.ii / 2e.ii. Build JWT payload → includes ID, email, admin flag
     return jwt.sign(
       {
         userId: this._id.toString(),
         email: this.email,
         isAdmin: this.isAdmin,
       },
+      // 1f.iii / 2e.iii. Use secret key from env vars to sign securely
       process.env.JWT_SECRET_KEY,
       {
+        // 1f.iv / 2e.iv. Set token validity (30 days here)
         expiresIn: "30d",
       }
     );
   } catch (error) {
+    // 1f.v / 2e.v. If token generation fails, log error → controller still handles response
     console.error(error);
   }
 };
 
-// Placeholder for additional password checks (not used currently)
-userSchema.methods.checkPassword = async function () {
-  try {
-    return;
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-// Create the User model from the schema
-// This lets you interact with the 'users' collection in MongoDB
 const User = mongoose.model("User", userSchema);
-
-// Export the User model so it can be used in controllers (like auth-controller)
 module.exports = User;
