@@ -34,7 +34,6 @@ const register = async (req, res) => {
     if (userExist) {
       return res.status(400).json({ msg: "email already exists" });
     }
-    
 
     //check if username already exist
     // const usernameExist = await User.findOne({ username: username });
@@ -64,11 +63,11 @@ const register = async (req, res) => {
       token: await userCreated.generateToken(),
       userId: userCreated._id.toString(),
     });
-   } catch (error) {
+  } catch (error) {
     // Handle duplicate key error (race condition)
     if (error.code === 11000 && error.keyPattern && error.keyPattern.email) {
-  return res.status(400).json({ msg: "Email already exists" });
-}
+      return res.status(400).json({ msg: "Email already exists" });
+    }
     console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
@@ -78,32 +77,39 @@ const register = async (req, res) => {
 /*                                Login Logic                                 */
 /* -------------------------------------------------------------------------- */
 
-const login = async (req, res) =>{
+const login = async (req, res) => {
   try {
+    // 1. Get email and password from request body
     const { email, password } = req.body;
 
-    const userExist = await User.findOne({email});
+    // 2. Find user by email in the database
+    const userExist = await User.findOne({ email });
 
-    if (!userExist){
-      return res.status(400).json({msg: "Invalid Credentialsss"});
+    // 3. If user not found, send error response
+    if (!userExist) {
+      return res.status(400).json({ msg: "Invalid Credentials" });
     }
 
-    const user = await bcrypt.compare(password,  userExist.password);
-    
-    if(user){
+    // 4. Compare provided password with hashed password in database
+    // (Note: This should use the model's comparePassword method, not bcrypt directly)
+    const isMatch = await userExist.comparePassword(password);
+
+    // 5. If password matches, send success response with JWT token
+    if (isMatch) {
       res.status(200).json({
-        msg: "login Sucessful",
+        msg: "Login successful",
         token: await userExist.generateToken(),
         userId: userExist._id.toString(),
-      })
-    }else{
-            return res.status(401).json({msg: "Invalid Credentials"});
+      });
+    } else {
+      // 6. If password does not match, send error response
+      return res.status(401).json({ msg: "Invalid Credentials" });
     }
-
   } catch (error) {
+    // 7. Handle any server errors
     res.status(500).json({ message: "Internal server error" });
   }
-}
+};
 
 // Export controller functions
 module.exports = { home, register, login };
