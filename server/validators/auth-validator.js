@@ -2,7 +2,7 @@ const { z } = require("zod");
 
 // This schema validates user signup data before it reaches your backend logic.
 // It ensures all required fields are present and meet basic formatting rules.
-// Using Zod helps catch invalid input early, improving security and user experience.
+// Using Zod helps catch invalid input early, improving security and user experience.  
 
 // Define a regular expression for basic email validation
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
