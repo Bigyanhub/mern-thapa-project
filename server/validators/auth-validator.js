@@ -1,68 +1,57 @@
 const { z } = require("zod");
 
-// This schema validates user signup data before it reaches your backend logic.
-// It ensures all required fields are present and meet basic formatting rules.
-// Using Zod helps catch invalid input early, improving security and user experience.
-
-// Define a regular expression for basic email validation
-// This regex checks for: any characters (except spaces/@ symbols) + @ + domain + . + extension
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-// Creating an object schema for signup form validation
-// This schema will validate all fields when signupSchema.parse(data) is called
+// Signup validation schema with enhanced security and user experience
 const signupSchema = z.object({
-  // Username validation chain
-  // Each method returns a new schema, so we can chain multiple validations
   username: z
-    .string({ required_error: "Name is required" }) // Must be a string type
-    .trim() // Remove whitespace from start/end
-    .min(3, { message: "Name must be at least 3 characters" }) // Minimum length check
-    .max(255, { message: "Name must not be more than 255 characters" }), // Maximum length check
+    .string({ required_error: "Username is required" })
+    .trim()
+    .min(3, { message: "Username must be at least 3 characters" })
+    .max(30, { message: "Username must not exceed 30 characters" })
+    .regex(/^[a-zA-Z0-9_-]+$/, {
+      message:
+        "Username can only contain letters, numbers, underscores, and hyphens",
+    }),
 
-  // Email validation chain
-  // More complex because we need custom regex validation
   email: z
-    .string({ required_error: "Email is required" }) // Must be a string type
-    .trim() // Remove whitespace from start/end
-    // .refine() allows custom validation logic beyond built-in Zod methods
-    // It takes a function that returns true/false and an error message
-    .refine((val) => emailRegex.test(val), {
-      message: "Invalid email address",
-    })
-    .min(3, { message: "Email must be at least 3 characters" }) // Minimum length
-    .max(255, { message: "Email must not be more than 255 characters" }), // Maximum length
+    .string({ required_error: "Email is required" })
+    .trim()
+    .pipe(z.email({ error: "Invalid email address" })),
 
-  // Phone validation chain
-  // Allows various phone formats by accepting 10-20 character strings
   phone: z
-    .string({ required_error: "Phone is required" }) // Must be a string type
-    .trim() // Remove whitespace from start/end
-    .min(10, { message: "Phone must be at least 10 characters" }) // Minimum length
-    .max(20, { message: "Phone must not be more than 20 characters" }), // Maximum length
+    .string({ required_error: "Phone number is required" })
+    .trim()
+    .regex(/^\+?[1-9]\d{9,14}$/, {
+      message:
+        "Please enter a valid phone number (10-15 digits, optional + prefix)",
+    }),
 
-  // Password validation chain
-  // No trim() here because passwords might intentionally have leading/trailing spaces
+  // Password validation with security requirements
   password: z
-    .string({ required_error: "Password is required" }) // Must be a string type
-    .min(7, { message: "Password must be at least 7 characters" }) // Minimum security requirement
-    .max(1024, { message: "Password must not be more than 1024 characters" }), // Prevent DoS attacks
+    .string({ required_error: "Password is required" })
+    .min(8, { message: "Password must be at least 8 characters long" })
+    .max(128, { message: "Password must not exceed 128 characters" })
+    .regex(/[A-Z]/, {
+      message: "Password must contain at least one uppercase letter",
+    })
+    .regex(/[a-z]/, {
+      message: "Password must contain at least one lowercase letter",
+    })
+    .regex(/[0-9]/, { message: "Password must contain at least one number" })
+    .regex(/[^A-Za-z0-9]/, {
+      message: "Password must contain at least one special character",
+    }),
 });
 
+// Login validation schema - simpler requirements for existing users
 const loginSchema = z.object({
   email: z
     .string({ required_error: "Email is required" })
     .trim()
-    .refine((val) => emailRegex.test(val), {
-      message: "Invalid email address",
-    })
-    .min(3, { message: "Email must be at least 3 characters" }),
+    .pipe(z.email({ error: "Invalid email address" })),
 
   password: z
     .string({ required_error: "Password is required" })
-    .min(7, { message: "Password must be 7 characters" })
-    .max(1024, { message: "Password must not be more than 1024 characters" }),
+    .min(1, { message: "Password is required" }),
 });
 
-// Export the schema so it can be used in controllers/middleware for validation
-// Usage: signupSchema.parse(req.body) will validate and throw error if invalid
 module.exports = { signupSchema, loginSchema };
