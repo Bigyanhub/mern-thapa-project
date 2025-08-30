@@ -22,9 +22,9 @@ const register = async (req, res) => {
     const { username, email, phone, password } = req.body;
 
     // 1b. Basic email check (weak – should be replaced with regex or validator.js)
-    if (!email.includes("@")) {
-      return res.status(400).json({ msg: "Invalid email format" });
-    }
+    // if (!email.includes("@")) {
+    //   return res.status(400).json({ msg: "Invalid email format" });
+    // }
 
     // 1c. Look up existing user to enforce unique email
     const userExist = await User.findOne({ email: email });
