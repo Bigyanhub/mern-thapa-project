@@ -48,6 +48,21 @@ const signupSchema = z.object({
     .max(1024, { message: "Password must not be more than 1024 characters" }), // Prevent DoS attacks
 });
 
+const loginSchema = z.object({
+  email: z
+    .string({ required_error: "Email is required" })
+    .trim()
+    .refine((val) => emailRegex.test(val), {
+      message: "Invalid email address",
+    })
+    .min(3, { message: "Email must be at least 3 characters" }),
+
+  password: z
+    .string({ required_error: "Password is required" })
+    .min(7, { message: "Password must be 7 characters" })
+    .max(1024, { message: "Password must not be more than 1024 characters" }),
+});
+
 // Export the schema so it can be used in controllers/middleware for validation
 // Usage: signupSchema.parse(req.body) will validate and throw error if invalid
-module.exports = signupSchema;
+module.exports = { signupSchema, loginSchema };

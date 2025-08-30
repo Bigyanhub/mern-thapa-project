@@ -6,9 +6,15 @@ const validate = (schema) => async (req, res, next) => {
     next();
   } catch (err) {
     console.error(err);
-    // Extract and return the first validation error message from Zod
-    const message = err.issues[0].message;
-    res.status(400).json({ msg: message });
+
+    const error = {
+      status: 400,
+      message: "Fill the input properly",
+      extraDetails: err.issues[0].message,
+    };
+
+    console.log(error);
+    next(error);
   }
 };
 
