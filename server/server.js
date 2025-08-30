@@ -2,7 +2,8 @@ require("dotenv").config(); // Load environment variables from .env file
 
 const express = require("express"); // Import express framework
 const app = express(); // Create an express application
-const router = require("./router/auth-router"); // Import authentication router
+const authRoute = require("./router/auth-router"); // Import authentication router
+const contactRoute = require("./router/contact-router");
 const connectDb = require("./utils/db"); // Import database connection function
 const errorMiddleware = require("./middlewares/error-middleware");
 
@@ -11,8 +12,8 @@ app.use(express.json());
 
 /* --------------------------- Sends to the router -------------------------- */
 // Use the auth router for /api/auth routes
-app.use("/api/auth", router);
-
+app.use("/api/auth", authRoute);
+app.use("/api/contact", contactRoute);
 app.use(errorMiddleware);
 
 // Connect to the database, then start the server
