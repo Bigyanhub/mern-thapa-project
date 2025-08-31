@@ -1,6 +1,6 @@
 const Contact = require("../models/contact-model");
 
-const contactForm = async (req, res) => {
+const contactForm = async (req, res, next) => {
   try {
     const response = req.body;
     await Contact.create(response);
@@ -9,6 +9,7 @@ const contactForm = async (req, res) => {
     const error = {
       status: 500,
       message: "Message not delivered",
+      extraDetails: err.message,
     };
 
     next(error);

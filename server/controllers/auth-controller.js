@@ -5,36 +5,41 @@ const bcrypt = require("bcrypt");
 /*                                 Home Logic                                 */
 /* -------------------------------------------------------------------------- */
 // Controller for home route
-const home = (req, res) => {
+const home = (req, res, next) => {
   try {
     res.status(200).json({ msg: "Welcome to our home page" });
   } catch (error) {
-    console.log(error);
+    const err = {
+      status: 500,
+      message: "Home route error",
+      extraDetails: error.message,
+    };
+    next(err);
   }
 };
 /* -------------------------------------------------------------------------- */
 /*                               Register Logic                               */
 /* -------------------------------------------------------------------------- */
 
-const register = async (req, res) => {
+const register = async (req, res, next) => {
   try {
-    // 1a. Extract registration data from request body
+    // Extract user registration data from the request body
     const { username, email, phone, password } = req.body;
 
-    // 1b. Basic email check (weak – should be replaced with regex or validator.js)
-    // if (!email.includes("@")) {
-    //   return res.status(400).json({ msg: "Invalid email format" });
-    // }
-
-    // 1c. Look up existing user to enforce unique email
+    // Check if a user with this email already exists in the database
     const userExist = await User.findOne({ email: email });
 
-    // 1d. If user already exists, block duplicate registration
+    // Prevent duplicate registration by returning an error if email is already taken
     if (userExist) {
-      return res.status(400).json({ msg: "Email already exists" });
+      const error = {
+        status: 400,
+        message: "Email already exists",
+        extraDetails: "User with this email already registered",
+      };
+      return next(error);
     }
 
-    // 1e. Create new user → triggers pre-save middleware to hash password
+    // Create new user in database - this triggers password hashing middleware
     const userCreated = await User.create({
       username,
       email,
@@ -42,21 +47,30 @@ const register = async (req, res) => {
       password,
     });
 
-    // 1f. Return success with freshly signed JWT (via user model method)
+    // Send success response with JWT token for immediate authentication
     res.status(201).json({
       msg: "Registration successful",
       token: await userCreated.generateToken(),
       userId: userCreated._id.toString(),
     });
   } catch (error) {
-    // 1g. Handle MongoDB duplicate key error (safety net if unique check fails)
+    // Handle MongoDB duplicate key constraint errors as a safety net
     if (error.code === 11000 && error.keyPattern?.email) {
-      return res.status(400).json({ msg: "Email already exists" });
+      const err = {
+        status: 400,
+        message: "Email already exists",
+        extraDetails: "Duplicate email detected in database",
+      };
+      return next(err);
     }
 
-    // 1h. Unexpected errors → log & return generic server error
-    console.log(error);
-    res.status(500).json({ message: "Internal server error" });
+    // Handle any other unexpected errors during registration
+    const err = {
+      status: 500,
+      message: "Registration failed",
+      extraDetails: error.message,
+    };
+    next(err);
   }
 };
 
@@ -64,23 +78,28 @@ const register = async (req, res) => {
 /*                                Login Logic                                 */
 /* -------------------------------------------------------------------------- */
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   try {
-    // 2a. Extract login credentials from request body
+    // Extract login credentials from the request body
     const { email, password } = req.body;
 
-    // 2b. Attempt to find user by email
+    // Search for user account by email address
     const userExist = await User.findOne({ email });
 
-    // 2c. If no account found → block login
+    // Return error if no user account exists with the provided email
     if (!userExist) {
-      return res.status(400).json({ msg: "Invalid credentials" });
+      const error = {
+        status: 400,
+        message: "Invalid credentials",
+        extraDetails: "User not found with this email",
+      };
+      return next(error);
     }
 
-    // 2d. Compare supplied password with stored hash (bcrypt.compare)
+    // Verify the provided password against the stored hashed password
     const isMatch = await userExist.comparePassword(password);
 
-    // 2e. If match → issue JWT via model method
+    // If password matches, generate JWT token and send success response
     if (isMatch) {
       res.status(200).json({
         msg: "Login successful",
@@ -88,12 +107,22 @@ const login = async (req, res) => {
         userId: userExist._id.toString(),
       });
     } else {
-      // 2f. Password mismatch → reject login
-      return res.status(401).json({ msg: "Invalid credentials" });
+      // Reject login attempt if password doesn't match
+      const error = {
+        status: 401,
+        message: "Invalid credentials",
+        extraDetails: "Password does not match",
+      };
+      return next(error);
     }
   } catch (error) {
-    // 2g. Fallback for unexpected errors
-    res.status(500).json({ message: "Internal server error" });
+    // Handle any unexpected errors during the login process
+    const err = {
+      status: 500,
+      message: "Login failed",
+      extraDetails: error.message,
+    };
+    next(err);
   }
 };
 

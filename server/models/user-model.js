@@ -33,68 +33,79 @@ const userSchema = new mongoose.Schema({
 });
 
 /* -------------------------------------------------------------------------- */
-/*                        Registration Flow (continuation)                    */
+/*                            Password Hashing Middleware                     */
 /* -------------------------------------------------------------------------- */
 
-// 1e.i. Triggered when register() calls User.create() in controller
+// Pre-save middleware that automatically hashes passwords before storing in database
 userSchema.pre("save", async function (next) {
   const user = this;
 
-  // 1e.ii. Only hash password if it's new/modified (prevents rehashing on updates)
+  // Skip password hashing if password hasn't been modified (for updates)
   if (!user.isModified("password")) {
     return next();
   }
 
   try {
-    // 1e.iii. Generate salt (cost factor = 10 → controls hashing difficulty)
+    // Generate salt with cost factor of 10 for password hashing
     const saltRound = await bcrypt.genSalt(10);
 
-    // 1e.iv. Hash the plaintext password before saving
+    // Hash the plaintext password using bcrypt with generated salt
     const hash_password = await bcrypt.hash(user.password, saltRound);
 
-    // 1e.v. Replace plain password with its secure hash
+    // Replace the plaintext password with the secure hash
     user.password = hash_password;
     next();
-  } catch (error) {
-    // 1e.vi. Pass hashing errors back up → caught in controller’s try/catch
+  } catch (err) {
+    // Pass any hashing errors to the error handling middleware
+     const error = {
+      status: 500,
+      message: "Error hashing password",
+      extraDetails: err.message,
+    };
+
     next(error);
   }
 });
 
 /* -------------------------------------------------------------------------- */
-/*                          Login Flow (continuation)                         */
+/*                            Password Comparison Method                      */
 /* -------------------------------------------------------------------------- */
 
-// 2d.i. Triggered when login() calls userExist.comparePassword(password)
+// Instance method to compare provided password with stored hashed password
 userSchema.methods.comparePassword = async function (password) {
-  // 2d.ii. bcrypt.compare → checks plain password against hashed DB password
+  // Use bcrypt to safely compare plaintext password with stored hash
   return bcrypt.compare(password, this.password);
 };
 
 /* -------------------------------------------------------------------------- */
-/*                Shared between Registration (1f) and Login (2e)             */
+/*                           JWT Token Generation Method                      */
 /* -------------------------------------------------------------------------- */
 
-// Called from register() [1f] and login() [2e] after user is validated
+// Instance method to generate JWT tokens for authenticated users
 userSchema.methods.generateToken = async function () {
   try {
-    // 1f.ii / 2e.ii. Build JWT payload → includes ID, email, admin flag
+    // Create JWT payload with user information for token authentication
     return jwt.sign(
       {
         userId: this._id.toString(),
         email: this.email,
         isAdmin: this.isAdmin,
       },
-      // 1f.iii / 2e.iii. Use secret key from env vars to sign securely
+      // Sign token using secret key from environment variables
       process.env.JWT_SECRET_KEY,
       {
-        // 1f.iv / 2e.iv. Set token validity (30 days here)
+        // Set token expiration to 30 days
         expiresIn: "30d",
       }
     );
-  } catch (error) {
-    // 1f.v / 2e.v. If token generation fails, log error → controller still handles response
-    console.error(error);
+  } catch (err) {
+    // Log error and throw exception if token generation fails
+    const error = {
+      status: 500,
+      message: "Token generation failed",
+      extraDetails: err.message,
+    };
+    next(error)
   }
 };
 
