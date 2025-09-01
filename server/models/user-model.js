@@ -57,7 +57,7 @@ userSchema.pre("save", async function (next) {
     next();
   } catch (err) {
     // Pass any hashing errors to the error handling middleware
-     const error = {
+    const error = {
       status: 500,
       message: "Error hashing password",
       extraDetails: err.message,
@@ -105,7 +105,7 @@ userSchema.methods.generateToken = async function () {
       message: "Token generation failed",
       extraDetails: err.message,
     };
-    next(error)
+    next(error);
   }
 };
 

@@ -1,0 +1,104 @@
+/* Simple Modern Navbar with Blue Theme */
+/* header {
+  background: #ffffff;
+  border-bottom: 1px solid #e1e8ff;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+} */
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  /* align-items: center; */
+  /* max-width: 1200px; */
+  /* margin: 0 auto; */
+  /* padding: 0 2rem; */
+  /* height: 70px; */
+}
+
+/* Logo */
+/* .logo-brand a {
+  color: #2563eb;
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+} */
+
+/* Navigation */
+nav {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 2rem;
+}
+
+/* nav li {
+  list-style: none;
+}
+
+nav a {
+  color: #64748b;
+  text-decoration: none;
+  font-weight: 400;
+  font-size: 0.95rem;
+  transition: color 0.3s ease;
+  position: relative;
+  padding: 0.5rem 0;
+} */
+
+/* Smooth underline hover effect */
+/* nav a::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #2563eb;
+  transition: width 0.3s ease;
+} */
+/* 
+nav a:hover {
+  color: #2563eb;
+} */
+
+/* nav a:hover::after {
+  width: 100%;
+} */
+/* 
+nav a.active {
+  color: #2563eb;
+  font-weight: 500;
+} */
+/* 
+nav a.active::after {
+  width: 100%;
+} */
+
+/* Auth buttons */
+/* nav li:nth-last-child(2) a { */
+  /* Register */
+  /* background: #2563eb;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+} */
+/* 
+nav li:nth-last-child(2) a::after {
+  display: none;
+} */
+
+/* nav li:nth-last-child(2) a:hover {
+  background: #1d4ed8;
+  color: white;
+} */
+
+/* nav li:last-child a { */
+  /* Login */
+  /* color: #2563eb;
+  font-weight: 500;
+} */
