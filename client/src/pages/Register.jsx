@@ -5,19 +5,17 @@ const Register = () => {
     username: "",
     email: "",
     phone: "",
-    password: ""
+    password: "",
   });
 
+  // Handle input changes for all form fields
   const handleInput = (e) => {
-    console.log(e);
-    let name = e.target.name;
-    let value = e.target.value;
+    const { name, value } = e.target;
 
-    setUser({
-      ...user,
-      [name]:value,
-
-    })
+    setUser((prevUser) => ({
+      ...prevUser,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = (e) => {
@@ -26,82 +24,83 @@ const Register = () => {
   };
 
   return (
-    <>
-      <section>
-        <main>
-          <div className="section-registration">
-            <div className="container grid grid-two-cols">
-              <div className="registration-image">
-                <img
-                  src="/images/register.png"
-                  alt="registration image"
-                  width={400}
-                />
-              </div>
+    <section>
+      <main>
+        <div className="section-registration">
+          <div className="container grid grid-two-cols">
+            <div className="registration-image">
+              <img
+                src="/images/register.png"
+                alt="Person registering"
+                width={400}
+                height="auto"
+              />
+            </div>
 
-              {/* Form */}
-              <div className="registration-form">
-                <h1 className="main-heading mb-3">Registration Form</h1>
-                <br />
+            {/* Registration Form */}
+            <div className="registration-form">
+              <h1 className="main-heading mb-3">Registration Form</h1>
 
-                <form onSubmit={handleSubmit}>
-                  <div>
-                    <label htmlFor="username">Username</label>
-                    <input
-                      type="text"
-                      name="username"
-                      placeholder="Enter your Username"
-                      id="username"
-                      autoComplete="off"
-                      required
-                      value={user.username}
-                      onChange={handleInput}
-                    />
-                    <label htmlFor="email">Email</label>
-                    <input
-                      type="email"
-                      name="email"
-                      placeholder="Enter your Email"
-                      id="email"
-                      autoComplete="off"
-                      required
-                      value={user.email}
-                      onChange={handleInput}
-                    />
-                    <label htmlFor="phone">Phone</label>
-                    <input
-                      type="number"
-                      name="phone"
-                      placeholder="Enter your Phone"
-                      id="phone"
-                      autoComplete="off"
-                      required
-                      value={user.phone}
-                      onChange={handleInput}
-                    />
-                    <label htmlFor="password">Password</label>
-                    <input
-                      type="password"
-                      name="password"
-                      placeholder="Enter your Password"
-                      id="password"
-                      autoComplete="off"
-                      required
-                      value={user.password}
-                      onChange={handleInput}
-                    />
-                  </div>
-                  <br />
-                  <button type="submit" className="btn btn-submit">
-                    Register now
-                  </button>
-                </form>
-              </div>
+              <form onSubmit={handleSubmit}>
+                <div className="form-group">
+                  <label htmlFor="username">Username</label>
+                  <input
+                    type="text"
+                    name="username"
+                    placeholder="Enter your Username"
+                    id="username"
+                    autoComplete="username"
+                    required
+                    value={user.username}
+                    onChange={handleInput}
+                  />
+
+                  <label htmlFor="email">Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Enter your Email"
+                    id="email"
+                    autoComplete="email"
+                    required
+                    value={user.email}
+                    onChange={handleInput}
+                  />
+
+                  <label htmlFor="phone">Phone</label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    placeholder="Enter your Phone"
+                    id="phone"
+                    autoComplete="tel"
+                    required
+                    value={user.phone}
+                    onChange={handleInput}
+                  />
+
+                  <label htmlFor="password">Password</label>
+                  <input
+                    type="password"
+                    name="password"
+                    placeholder="Enter your Password"
+                    id="password"
+                    autoComplete="new-password"
+                    required
+                    value={user.password}
+                    onChange={handleInput}
+                  />
+                </div>
+
+                <button type="submit" className="btn btn-submit">
+                  Register Now
+                </button>
+              </form>
             </div>
           </div>
-        </main>
-      </section>
-    </>
+        </div>
+      </main>
+    </section>
   );
 };
 
