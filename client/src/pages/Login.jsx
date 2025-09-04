@@ -8,21 +8,20 @@ const Login = () => {
   });
 
   const handleInput = (e) => {
-    let name = e.target.name;
-    let value= e.target.value;
+    const { name, value } = e.target;
+    // console.log(e)
 
-    setUser({
-      ...user,
-      [name]:value
-    })
+    setUser((prevUser) => ({
+      ...prevUser,
+      [name]: value,
+    }));
   };
 
-  const handleSubmit = (e) =>{
+  const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(e);
-    
+    console.log(user);
+  };
 
-  }
   return (
     <>
       <section>

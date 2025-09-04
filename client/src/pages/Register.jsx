@@ -11,7 +11,8 @@ const Register = () => {
   // Handle input changes for all form fields
   const handleInput = (e) => {
     const { name, value } = e.target;
-
+    // console.log(e);
+  
     setUser((prevUser) => ({
       ...prevUser,
       [name]: value,

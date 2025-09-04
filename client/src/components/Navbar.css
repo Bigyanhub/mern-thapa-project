@@ -10,11 +10,11 @@
 /* .container {
   display: flex;
   justify-content: space-between; */
-  /* align-items: center; */
-  /* max-width: 1200px; */
-  /* margin: 0 auto; */
-  /* padding: 0 2rem; */
-  /* height: 70px; */
+/* align-items: center; */
+/* max-width: 1200px; */
+/* margin: 0 auto; */
+/* padding: 0 2rem; */
+/* height: 70px; */
 /* } */
 
 /* Logo */
@@ -80,8 +80,8 @@ nav a.active::after {
 
 /* Auth buttons */
 /* nav li:nth-last-child(2) a { */
-  /* Register */
-  /* background: #2563eb;
+/* Register */
+/* background: #2563eb;
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 6px;
@@ -98,37 +98,19 @@ nav li:nth-last-child(2) a::after {
 } */
 
 /* nav li:last-child a { */
-  /* Login */
-  /* color: #2563eb;
+/* Login */
+/* color: #2563eb;
   font-weight: 500;
 } */
 
-
-header{
-  background: #ffffff;
-  border-bottom: 1px  solid #e1e8ff;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-}
-
-.container{
+.container {
+  max-width: 140rem;
+  padding: 4.2rem 2.4rem;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  max-width: 1200px;
-  margin: 0 auto;
-  border: 1px solid green;
-  padding: 0 2rem;
-  height: 70px;
 }
 
-nav{
+ul {
+  gap: 3.2rem;
   display: flex;
-  gap: 2rem;
-}
-
-.logo-brand a{
-  color: #2563eb;
-  /* font-size: 2rem; */
 }
