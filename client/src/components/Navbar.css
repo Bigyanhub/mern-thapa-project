@@ -103,9 +103,7 @@ nav li:nth-last-child(2) a::after {
   font-weight: 500;
 } */
 
-.container {
-  max-width: 140rem;
-  padding: 4.2rem 2.4rem;
+.nav-bar {
   display: flex;
   justify-content: space-between;
 }

@@ -5,7 +5,7 @@ const Navbar = () => {
   return (
     <>
       <header>
-        <div className="container">
+        <div className="container nav-bar">
           <div className="logo-brand">
             <NavLink to="/">Bigyan</NavLink>
           </div>
