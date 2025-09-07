@@ -1,11 +1,15 @@
 import React from "react";
+import Analytics from "../components/Analytics";
 
+// Home page component for Basnet Technical
 const Home = () => {
   return (
     <>
+      {/* Main Hero Section */}
       <main>
         <section className="section-hero">
           <div className="container grid grid-two-cols">
+            {/* Hero text content */}
             <div className="hero-content">
               <p>We are the World Best IT Company</p>
               <h1>Welcome to Basnet Technical</h1>
@@ -16,6 +20,7 @@ const Home = () => {
                 tailored to meet your unique needs.
               </p>
 
+              {/* Call-to-action buttons */}
               <div className="btn btn-group">
                 <a href="/contact">
                   <button className="btn">connect now</button>
@@ -26,6 +31,7 @@ const Home = () => {
               </div>
             </div>
 
+            {/* Hero image */}
             <div className="hero-image">
               <img
                 src="/images/home.png"
@@ -38,30 +44,13 @@ const Home = () => {
         </section>
       </main>
 
-      <section className="section-analytics">
-        <div className="container grid grid-four-cols">
-          <div className="div1">
-            <h2>50+</h2>
-            <p>registered companies</p>
-          </div>
-          <div className="div1">
-            <h2>10,000+</h2>
-            <p>Happy Clients</p>
-          </div>
-          <div className="div1">
-            <h2>500+</h2>
-            <p>Well known developers</p>
-          </div>
-          <div className="div1">
-            <h2>24/7</h2>
-            <p>services</p>
-          </div>
-        </div>
-      </section>
+      {/* Analytics Section (shows business stats or highlights) */}
+      <Analytics />
 
-      {/* 3rd section  */}
+      {/* Secondary Hero Section (encourages user to get started) */}
       <section className="section-hero">
         <div className="container grid grid-two-cols">
+          {/* Secondary hero image */}
           <div className="hero-image">
             <img
               src="/images/design.png"
@@ -71,6 +60,7 @@ const Home = () => {
             />
           </div>
 
+          {/* Secondary hero text content */}
           <div className="hero-content">
             <p>We are here to help you</p>
             <h1>Get Started Today</h1>
@@ -81,6 +71,7 @@ const Home = () => {
               the digital age.
             </p>
 
+            {/* Call-to-action buttons */}
             <div className="btn btn-group">
               <a href="/contact">
                 <button className="btn">connect now</button>

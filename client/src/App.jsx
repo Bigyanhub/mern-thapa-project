@@ -9,12 +9,13 @@ import Register from "./pages/Register";
 import Navbar from "./components/Navbar";
 import Services from "./pages/Services";
 import Footer from "./components/Footer";
+import Error from "./pages/Error";
 
 const App = () => {
   return (
     <>
       <BrowserRouter>
-      <Navbar />
+        <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
@@ -22,6 +23,7 @@ const App = () => {
           <Route path="/service" element={<Services />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="*" element={<Error />} />
         </Routes>
         <Footer />
       </BrowserRouter>
