@@ -1,14 +1,17 @@
 import { NavLink } from "react-router-dom";
 import "./Navbar.css";
 
+// Main navigation bar component
 const Navbar = () => {
   return (
     <>
       <header>
         <div className="container nav-bar">
+          {/* Logo/brand */}
           <div className="logo-brand">
             <NavLink to="/">Bigyan</NavLink>
           </div>
+          {/* Navigation links */}
           <nav>
             <ul>
               <li>
